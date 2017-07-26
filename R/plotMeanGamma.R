@@ -32,6 +32,7 @@
 ##'   the individual ids).
 ##' @param show_colnames Boolean; if \code{TRUE} we display column names
 ##'   (ie, the column name associated with a cytokine; typically not needed)
+##' @param cytokine_annotation_colors Colors for cytokine annotation (TODO)
 ##' @param measure Optional. By default, we produce a heatmap of the mean
 ##'   gammas produced in a model fit. We can override this by supplying a
 ##'   matrix of suitable dimension as well; these can be generated with
@@ -56,19 +57,21 @@
 ##' plot(CR, measure=PosteriorPs(CR))
 ##' @export
 plot.COMPASSResult <- function(x, y, subset=NULL,
-                               threshold=0.01,
-                               minimum_dof=1,
-                               maximum_dof=Inf,
-                               must_express=NULL,
-                               row_annotation,
-                               palette=colorRampPalette(brewer.pal(10,"Purples"))(20),
-                               show_rownames=FALSE,
-                               show_colnames=FALSE,
-                               measure=NULL,
-                               order_by=FunctionalityScore,
-                               order_by_max_functionality=TRUE,
-										 markers=NULL,
-                               ...) {
+                                   threshold=0.01,
+                                   minimum_dof=1,
+                                   maximum_dof=Inf,
+                                   must_express=NULL,
+                                   row_annotation,
+                                   palette=colorRampPalette(brewer.pal(10,"Purples"))(20),
+                                   show_rownames=FALSE,
+                                   show_colnames=FALSE,
+                                   measure=NULL,
+                                   order_by=FunctionalityScore,
+                                   order_by_max_functionality=TRUE,
+                                   markers=NULL,
+                                   cytokine_annotation_colors=NULL,
+                                   cytokine_height_multiplier=1,
+                                   ...) {
 
   call <- match.call()
 
@@ -94,25 +97,25 @@ plot.COMPASSResult <- function(x, y, subset=NULL,
   }
   ## Construct an object based on a reduced set of markers for plotting a heatmap
   if(!is.null(markers)){
-  	if(!all(markers%in%markers(x))){
-  		stop("Invalid marker names")
-  	}
-  	message("Computing a heatmap based on ",paste(markers,collapse=", "))
-  	new_categories = unique(categories(x,FALSE)[,markers,drop=FALSE])
-  	all_categories=categories(x,FALSE)[,markers,drop=FALSE]
-  	dmat = as.matrix(pdist(new_categories,all_categories))
-  	cat_indices = apply(dmat,1,function(y)which(y==0))
-  	new_mean_gamma=sapply(cat_indices,function(i)apply(Gamma(x)[,i,],1,mean))
-  	new_categories=cbind(new_categories,Counts=rowSums(new_categories))
-  	reord=c(setdiff(1:nrow(new_categories),which(new_categories[,"Counts"]==0)),which(new_categories[,"Counts"]==0))
-   new_categories=new_categories[reord,]
-  	new_mean_gamma=new_mean_gamma[,reord]
-   colnames(new_mean_gamma)=apply(new_categories[,-ncol(new_categories)],1,function(x)paste0(x,collapse=""))
-  	# copy and reassign
-  	X=x
-  	X$fit$mean_gamma=new_mean_gamma
-  	X$fit$categories = new_categories
-  	x=X
+    if(!all(markers%in%markers(x))){
+      stop("Invalid marker names")
+    }
+    message("Computing a heatmap based on ",paste(markers,collapse=", "))
+    new_categories = unique(categories(x,FALSE)[,markers,drop=FALSE])
+    all_categories=categories(x,FALSE)[,markers,drop=FALSE]
+    dmat = as.matrix(pdist(new_categories,all_categories))
+    cat_indices = apply(dmat,1,function(y)which(y==0))
+    new_mean_gamma=sapply(cat_indices,function(i)apply(Gamma(x)[,i,],1,mean))
+    new_categories=cbind(new_categories,Counts=rowSums(new_categories))
+    reord=c(setdiff(1:nrow(new_categories),which(new_categories[,"Counts"]==0)),which(new_categories[,"Counts"]==0))
+    new_categories=new_categories[reord,]
+    new_mean_gamma=new_mean_gamma[,reord]
+    colnames(new_mean_gamma)=apply(new_categories[,-ncol(new_categories)],1,function(x)paste0(x,collapse=""))
+    # copy and reassign
+    X=x
+    X$fit$mean_gamma=new_mean_gamma
+    X$fit$categories = new_categories
+    x=X
   }
 
   ## Number of markers
@@ -317,17 +320,20 @@ plot.COMPASSResult <- function(x, y, subset=NULL,
   M <- M[, ord, drop=FALSE]
 
   ret = pheatmap(M,
-           color=palette,
-           show_rownames=show_rownames,
-           show_colnames=show_colnames,
-           row_annotation=rowann,
-           cluster_rows=FALSE,
-           cluster_cols=FALSE,
-           cytokine_annotation=cats_df,
-	   order_by_max_functionality=order_by_max_functionality,
-           ...
+                 color=palette,
+                 show_rownames=show_rownames,
+                 show_colnames=show_colnames,
+                 row_annotation=rowann,
+                 cluster_rows=FALSE,
+                 cluster_cols=FALSE,
+                 cytokine_annotation=cats_df,
+                 order_by_max_functionality=order_by_max_functionality,
+                 cytokine_annotation_colors=cytokine_annotation_colors,
+                 cytokine_height_multiplier=cytokine_height_multiplier,
+                 ...
   )
   ret = grid.grab(wrap = TRUE)
-  return(invisible(ret))
 
+  # Attempts to save the image to a file within this function results in weird behavior. So just draw.
+  grid.draw(ret)
 }

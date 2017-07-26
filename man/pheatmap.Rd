@@ -19,7 +19,8 @@ pheatmap(mat, color = colorRampPalette(rev(brewer.pal(n = 7, name =
   * fontsize, filename = NA, width = NA, height = NA,
   row_annotation = NA, row_annotation_legend = TRUE,
   row_annotation_colors = NA, cytokine_annotation = NA, headerplot = NA,
-  polar = FALSE, order_by_max_functionality = TRUE, ...)
+  polar = FALSE, order_by_max_functionality = TRUE,
+  cytokine_annotation_colors = NULL, cytokine_height_multiplier = 1, ...)
 }
 \arguments{
 \item{mat}{numeric matrix of the values to be plotted.}
@@ -140,6 +141,8 @@ Cytokine ordering is ignored when the headerplot argument is passed.}
 
 \item{order_by_max_functionality}{Boolean; re-order the cytokine labels by
 maximum functionality?}
+
+\item{cytokine_annotation_colors}{Colors for cytokine annotation (TODO)}
 
 \item{\dots}{graphical parameters for the text used in plot. Parameters passed to
 \code{\link{grid.text}}, see \code{\link{gpar}}.}

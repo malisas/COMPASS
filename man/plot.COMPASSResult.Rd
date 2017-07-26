@@ -10,7 +10,8 @@
   palette = colorRampPalette(brewer.pal(10, "Purples"))(20),
   show_rownames = FALSE, show_colnames = FALSE, measure = NULL,
   order_by = FunctionalityScore, order_by_max_functionality = TRUE,
-  markers = NULL, ...)
+  markers = NULL, cytokine_annotation_colors = NULL,
+  cytokine_height_multiplier = 1, ...)
 }
 \arguments{
 \item{x}{An object of class \code{COMPASSResult}.}
@@ -64,6 +65,8 @@ Set this to \code{NULL} to preserve the original ordering of the data.}
 to \code{TRUE}.}
 
 \item{markers}{specifies a subset of markers to plot. default is NULL, which means all markers.}
+
+\item{cytokine_annotation_colors}{Colors for cytokine annotation (TODO)}
 
 \item{...}{Optional arguments passed to \code{pheatmap}.}
 }
