@@ -10,7 +10,7 @@
   palette = colorRampPalette(brewer.pal(10, "Purples"))(20),
   show_rownames = FALSE, show_colnames = FALSE, measure = NULL,
   order_by = FunctionalityScore, order_by_max_functionality = TRUE,
-  markers = NULL, ...)
+  fixed_column_order = FALSE, markers = NULL, ...)
 }
 \arguments{
 \item{x}{An object of class \code{COMPASSResult}.}
@@ -62,6 +62,8 @@ Set this to \code{NULL} to preserve the original ordering of the data.}
 
 \item{order_by_max_functionality}{Order columns by functionality within each degree subset.
 to \code{TRUE}.}
+
+\item{fixed_column_order}{Overrides order_by_max_functionality so that columns (i.e. subsets) are not ordered at all. Default \code{FALSE}. When neither order_by_max_functionality or fixed_column_order are specified, columns are ordered by the number of cytokine-positive markers.}
 
 \item{markers}{specifies a subset of markers to plot. default is NULL, which means all markers.}
 

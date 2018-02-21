@@ -42,6 +42,7 @@
 ##' Set this to \code{NULL} to preserve the original ordering of the data.
 ##' @param order_by_max_functionality Order columns by functionality within each degree subset.
 ##' to \code{TRUE}.
+##' @param fixed_column_order Overrides order_by_max_functionality so that columns (i.e. subsets) are not ordered at all. Default \code{FALSE}. When neither order_by_max_functionality or fixed_column_order are specified, columns are ordered by the number of cytokine-positive markers.
 ##' @param markers specifies a subset of markers to plot. default is NULL, which means all markers.
 ##' @param ... Optional arguments passed to \code{pheatmap}.
 ##' @importFrom RColorBrewer brewer.pal
@@ -67,6 +68,7 @@ plot.COMPASSResult <- function(x, y, subset=NULL,
                                measure=NULL,
                                order_by=FunctionalityScore,
                                order_by_max_functionality=TRUE,
+                               fixed_column_order=FALSE,
 										 markers=NULL,
                                ...) {
 
@@ -308,10 +310,12 @@ plot.COMPASSResult <- function(x, y, subset=NULL,
   rownames(cats_df) <- colnames(M)
 
   ## Reorder data within degrees of functionality
-  if(order_by_max_functionality){
+  if(fixed_column_order) {
+    ord <- 1:length(dof) # Keep same order
+  }else if(order_by_max_functionality){
     means <- apply(M, 2, mean)
     ord <- order(dof, means, decreasing = FALSE)
-  }else{
+  } else {
     ord <- order(dof, decreasing = FALSE)
   }
   M <- M[, ord, drop=FALSE]
@@ -325,6 +329,7 @@ plot.COMPASSResult <- function(x, y, subset=NULL,
            cluster_cols=FALSE,
            cytokine_annotation=cats_df,
 	   order_by_max_functionality=order_by_max_functionality,
+	   fixed_column_order=fixed_column_order,
            ...
   )
   ret = grid.grab(wrap = TRUE)

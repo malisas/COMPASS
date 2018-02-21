@@ -905,6 +905,7 @@ kmeans_pheatmap = function(mat, k = min(nrow(mat), 150), sd_limit = NA, ...){
 #' \code{\link{grid.text}}, see \code{\link{gpar}}.
 #' @param order_by_max_functionality Boolean; re-order the cytokine labels by
 #' maximum functionality?
+#' @param fixed_column_order Overrides order_by_max_functionality so that columns (i.e. subsets) are not ordered at all. Default \code{FALSE}. When neither order_by_max_functionality or fixed_column_order are specified, columns are ordered by the number of cytokine-positive markers.
 #'
 #' @return
 #' Invisibly a list of components
@@ -980,7 +981,7 @@ kmeans_pheatmap = function(mat, k = min(nrow(mat), 150), sd_limit = NA, ...){
 #' pheatmap(test, clustering_distance_rows = drows, clustering_distance_cols = dcols)
 #' @importFrom RColorBrewer brewer.pal
 #' @export
-pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7, name = "RdYlBu")))(100), kmeans_k = NA, breaks = NA, border_color = "grey60", cellwidth = NA, cellheight = NA, scale = "none", cluster_rows = TRUE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_distance_cols = "euclidean", clustering_method = "complete",  treeheight_row = ifelse(cluster_rows, 50, 0), treeheight_col = ifelse(cluster_cols, 50, 0), legend = TRUE, legend_breaks = NA, legend_labels = NA, annotation = NA, annotation_colors = NA, annotation_legend = TRUE, drop_levels = TRUE, show_rownames = TRUE, show_colnames = TRUE, main = NA, fontsize = 10, fontsize_row = fontsize, fontsize_col = fontsize, display_numbers = FALSE, number_format = "%.2f", fontsize_number = 0.8 * fontsize, filename = NA, width = NA, height = NA, row_annotation = NA, row_annotation_legend = TRUE, row_annotation_colors=NA, cytokine_annotation=NA, headerplot=NA, polar=FALSE, order_by_max_functionality=TRUE, cytokine_annotation_colors=NA, cytokine_height_multiplier=1, ...){
+pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7, name = "RdYlBu")))(100), kmeans_k = NA, breaks = NA, border_color = "grey60", cellwidth = NA, cellheight = NA, scale = "none", cluster_rows = TRUE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_distance_cols = "euclidean", clustering_method = "complete",  treeheight_row = ifelse(cluster_rows, 50, 0), treeheight_col = ifelse(cluster_cols, 50, 0), legend = TRUE, legend_breaks = NA, legend_labels = NA, annotation = NA, annotation_colors = NA, annotation_legend = TRUE, drop_levels = TRUE, show_rownames = TRUE, show_colnames = TRUE, main = NA, fontsize = 10, fontsize_row = fontsize, fontsize_col = fontsize, display_numbers = FALSE, number_format = "%.2f", fontsize_number = 0.8 * fontsize, filename = NA, width = NA, height = NA, row_annotation = NA, row_annotation_legend = TRUE, row_annotation_colors=NA, cytokine_annotation=NA, headerplot=NA, polar=FALSE, order_by_max_functionality=TRUE, fixed_column_order=FALSE, cytokine_annotation_colors=NA, cytokine_height_multiplier=1, ...){
   #Do the arguments even make sense?
   oldwarn<-options("warn")
   options("warn"=-1)
@@ -1115,7 +1116,7 @@ pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7, name = "
     cytokine_annotation = cytokine_annotation[colnames(mat), ,drop=FALSE]
 
     #order the columns by max functionality
-    if (order_by_max_functionality) {
+    if (!fixed_column_order & order_by_max_functionality) {
       cka <- apply(cytokine_annotation, 2, function(x) {
         tmp <- as.numeric(as.character(x))
         sum(tmp[tmp != -1])
@@ -1123,7 +1124,7 @@ pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7, name = "
       cytokine_annotation = cytokine_annotation[,order(cka,decreasing=TRUE),drop=FALSE]
     }
 
-    if(!cluster_cols&is.na(headerplot)){
+    if(!fixed_column_order & !cluster_cols&is.na(headerplot)){
       ckr<-apply(cytokine_annotation,1,function(x)sum(as.numeric(as.character(x))))
       cytokine_annotation = cytokine_annotation[order(ckr),]
       mat = mat[,rownames(cytokine_annotation)]

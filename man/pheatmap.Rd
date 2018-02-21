@@ -20,7 +20,8 @@ pheatmap(mat, color = colorRampPalette(rev(brewer.pal(n = 7, name =
   row_annotation = NA, row_annotation_legend = TRUE,
   row_annotation_colors = NA, cytokine_annotation = NA, headerplot = NA,
   polar = FALSE, order_by_max_functionality = TRUE,
-  cytokine_annotation_colors = NA, cytokine_height_multiplier = 1, ...)
+  fixed_column_order = FALSE, cytokine_annotation_colors = NA,
+  cytokine_height_multiplier = 1, ...)
 }
 \arguments{
 \item{mat}{numeric matrix of the values to be plotted.}
@@ -141,6 +142,8 @@ Cytokine ordering is ignored when the headerplot argument is passed.}
 
 \item{order_by_max_functionality}{Boolean; re-order the cytokine labels by
 maximum functionality?}
+
+\item{fixed_column_order}{Overrides order_by_max_functionality so that columns (i.e. subsets) are not ordered at all. Default \code{FALSE}. When neither order_by_max_functionality or fixed_column_order are specified, columns are ordered by the number of cytokine-positive markers.}
 
 \item{cytokine_annotation_colors}{list of colors for cytokine annotation}
 
